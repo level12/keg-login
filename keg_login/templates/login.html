@@ -1,0 +1,59 @@
+{% extends 'keg-login/base.html' %}
+
+{% block main %}
+{% from "keg-login/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
+
+<div class="panel login-panel panel-default">
+    <div class="panel-body">
+        <form action="" method="POST" class="form" role="form">
+            {{ form.hidden_tag() }}
+
+            <img class="center-block logo" src="{{ url_for('static', filename='img/FIS-Logo-Green-login.png') }}">
+            <div class="form-group {% if form.id.errors %}has-error{% endif %}">
+                <div class="input-group">
+                    {{ form.id(class_='form-control', placeholder="Email", tabindex=110) }}
+                    <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                </div>
+                {% if form.id.errors %}
+                {% for e in form.id.errors %}
+                <p class="help-block">{{ e }}</p>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            {% set field = form.password %}
+            <div class="form-group {% if field.errors %}has-error{% endif %}">
+                <div class="input-group">
+                    {{ field(class_='form-control', placeholder="Password",  tabindex=120) }}
+                    <div class="input-group-addon">
+                        <i class="fa fa-lock" style="padding: 0 .2em;"></i>
+                    </div>
+                </div>
+                {% if field.errors %}
+                {% for e in field.errors %}
+                <p class="help-block">{{ e }}</p>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="text-right">
+                <a href="{{ url_for('keg_login.forgot-password') }}" tabindex='195'>
+                    Forgot password?
+                </a>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ render_checkbox_field(form.remember_me, tabindex=130) }}
+                </div>
+
+                {# Submit button #}
+                <div class="col-lg-6">
+                    <input type="submit" class="btn btn-success pull-right" value="Log in" tabindex="180" >
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
