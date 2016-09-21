@@ -41,19 +41,3 @@
            >
 {%- endmacro %}
 
-{% macro render_password_requirements() -%}
-    <h4>Password Requirements</h4>
-    <ul class="list-unstyled">
-        <li>At least 8 characters long</li>
-        <li>
-            Contain any 3 of:
-            <ul>
-                <li>Upper case letter</li>
-                <li>Lower case letter</li>
-                <li>Number</li>
-                <li>Special character (non-alphanumeric)</li>
-            </ul>
-        </li>
-        <li>Not be one you used before</li>
-    </ul>
-{%- endmacro %}
