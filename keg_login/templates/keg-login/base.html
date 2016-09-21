@@ -1,0 +1,14 @@
+{% block title -%}
+    {{ title }}
+{%- endblock %}
+
+{% block content %}
+<div>
+    <div>
+        <div>
+            {% block main %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

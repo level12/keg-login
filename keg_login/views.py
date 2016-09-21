@@ -100,7 +100,7 @@ class ChangePassword(KegLoginView, NeedsCurrentUser):
             form = self.make_form()
 
             if form.validate():
-                self.update_password(form.new_password.data)
+                self.update_password(self.user, form.new_password.data)
                 flashes = self.handle_successful_reset()
                 return RedirectResponse(form.next.data, flashes)
 
@@ -121,6 +121,7 @@ class ChangePassword(KegLoginView, NeedsCurrentUser):
 
     def post(self):
         return self.get_responder().post().as_flask_response()
+
 
 
 class ForgotPassword(KegLoginView):
@@ -196,7 +197,7 @@ class Login(KegLoginView):
             return []  # pragma: no cover
 
         def check_user_blocked_from_login(self, user):
-            """Returns `Flash` messages IFF the given user is blocked from loggining in even after
+            """Returns `Flash` messages IFF the given user is blocked from logging in even after
             providing proper credentials."""
             return []  # pragma: no cover
 
@@ -212,6 +213,9 @@ class Login(KegLoginView):
             """Does some stuff when a valid user enters a wrong password. E.g. log messages, etc."""
             pass  # pragma: no cover
 
+        def get_current_user(self):
+            return current_user
+
         def get(self):
             return self.render_with({'form': self.make_form()})
 
@@ -219,17 +223,15 @@ class Login(KegLoginView):
             form = self.make_form()
             user = self.get_user_by_id(form.id.data)
 
-            respond = lambda flash_messages=(): self.render_with({'form': form}, flash_messages)
-
             attempt_blocked_flashes = (self.check_user_blocked_from_login_attempt(user)
                                        if user else [])
             if attempt_blocked_flashes:
-                return respond(attempt_blocked_flashes)
+                return self.render_with({'form': form}, attempt_blocked_flashes)
 
             if form.validate():
                 login_blocked_flashes = self.check_user_blocked_from_login(user)
                 if login_blocked_flashes:
-                    return respond(login_blocked_flashes)
+                    return self.render_with({'form': form}, login_blocked_flashes)
 
                 flashes = self.handle_login_success(user)
                 self.login_user(user, remember=form.remember_me.data)
@@ -238,10 +240,11 @@ class Login(KegLoginView):
             if user:
                 self.handle_login_failure(user)
 
-            return respond()
+            return self.render_with({'form': form}, ())
 
-    def get(self, current_user=current_user):
+    def get(self):
         responder = self.get_responder()
+        current_user = responder.get_current_user()
         return (
             RedirectResponse(responder.get_next_url(), [])  # Skip login form when logged in.
             if current_user and current_user.is_authenticated
@@ -318,7 +321,7 @@ class ResetPassword(KegLoginView, NeedsCurrentUser, CanLogout):
             )
 
         def new_password_validators(self, user):
-            pass  # pragma: no cover
+            return []  # pragma: no cover
 
         def make_form(self, user, token_data):
             password_validators = list(
