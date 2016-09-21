@@ -2,7 +2,6 @@ from pathlib import Path
 
 from blazeutils import randchars
 import flask
-from keg.web import rule
 from wtforms import validators
 
 from keg_login import views
@@ -624,4 +623,3 @@ class TestResetPasswordView(object):
             'retype_password': 'abc123'
         })
         assert response.status_code == 302
-

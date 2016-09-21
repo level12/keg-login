@@ -123,7 +123,6 @@ class ChangePassword(KegLoginView, NeedsCurrentUser):
         return self.get_responder().post().as_flask_response()
 
 
-
 class ForgotPassword(KegLoginView):
     url = '/forgot-password'
 

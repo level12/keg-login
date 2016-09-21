@@ -23,7 +23,7 @@ class TemplateResponse(
     """A response based on a template."""
 
     def render_flask_template(self):
-        return flask.render_template(self.template,**self.template_args)
+        return flask.render_template(self.template, **self.template_args)
 
     def as_flask_response(self):
         for message, category in self.flash_messages:
