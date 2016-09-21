@@ -150,7 +150,7 @@ class TestForgotPasswordResponder(ResponderTestBase):
     class Responder(views.ForgotPassword.Responder):
         def __init__(self, *args, **kwargs):
             self.resets_requested = []
-            super().__init__(*args, **kwargs)
+            views.ForgotPassword.Responder.__init__(self, *args, **kwargs)
 
         def get_next_url(self):
             return '/'
@@ -241,7 +241,7 @@ class TestLoginResponder(ResponderTestBase):
     class Responder(views.Login.Responder):
         def __init__(self, *args, **kwargs):
             self.login_effects = []
-            super().__init__(*args, **kwargs)
+            views.Login.Responder.__init__(self, *args, **kwargs)
 
         def get_user_by_id(self, id):
             return user_map.get(id)
@@ -398,9 +398,9 @@ class TestLogoutResponder(ResponderTestBase):
     """Tests isolating [most] dependencies and effects."""
 
     class Responder(views.Logout.Responder):
-        def __init__(self, *a, **kw):
+        def __init__(self, *args, **kwargs):
             self.logout_effects = 0
-            super().__init__(*a, **kw)
+            views.Logout.Responder.__init__(self, *args, **kwargs)
 
         def logout_user(self):
             self.logout_effects += 1
@@ -466,9 +466,8 @@ class TestResetPasswordResponder(ResponderTestBase):
     """Tests isolating [most] dependencies and effects."""
 
     class Responder(views.ResetPassword.Responder):
-        def __init__(self, *a, **kw):
-
-            super().__init__(*a, **kw)
+        def __init__(self, *args, **kwargs):
+            views.ResetPassword.Responder.__init__(self, *args, **kwargs)
 
         def process_reset_token(self, reset_token):
             return token_map.get(reset_token), reset_token

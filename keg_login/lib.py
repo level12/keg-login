@@ -61,11 +61,10 @@ class Responder(object):
         return self.query_args.get('next', self.url_for(self.default_next_endpoint))
 
     def render_with(self, template_args=None, flash_messages=()):
-        return TemplateResponse(
-            self.template,
-            {**self.default_template_args, **(template_args or {})},
-            flash_messages
-        )
+        args = self.default_template_args.copy()
+        args.update(template_args or {})
+
+        return TemplateResponse(self.template, args, flash_messages)
 
     def url_for(self, *args, **kwargs):
         """Allows responder to be isolated from app configuration."""
