@@ -1,0 +1,12 @@
+Flask-Login
+Flask-WTF
+Flask
+
+# Testing Libraries
+flake8
+flask-webtest
+mock
+pyquery
+pytest
+pytest-cov
+tox
