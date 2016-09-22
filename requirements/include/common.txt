@@ -1,6 +1,8 @@
 Flask-Login
 Flask-WTF
 Flask
+Keg
+KegElements
 
 # Testing Libraries
 flake8
