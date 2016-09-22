@@ -34,6 +34,16 @@ class ResponderTestBase(object):
     def make_user(self, email=None, password=None):
         return User(email or randchars(), password or randchars())
 
+    def make_responder(self, *args, **kwargs):
+        return self.Responder(*args, **kwargs)
+
+    def test_next_url(self):
+        responder = self.make_responder()
+        assert responder.get_next_url() == '/'
+
+        responder = self.make_responder(query_args={'next': 'foo/bar.html'})
+        assert responder.get_next_url() == 'foo/bar.html'
+
 
 class TestChangePasswordResponder(ResponderTestBase):
     class Responder(views.ChangePassword.Responder):
@@ -42,7 +52,7 @@ class TestChangePasswordResponder(ResponderTestBase):
         def new_password_validators(self):
             return []
 
-        def get_next_url(self):
+        def url_for(self, *args, **kwargs):
             return '/'
 
     def test_change_password_invalid_old_password(self):
@@ -89,6 +99,8 @@ class TestChangePasswordResponder(ResponderTestBase):
         assert type(response) == TemplateResponse
         assert response.template_args['form']
 
+    def make_responder(self, *args, **kwargs):
+        return self.Responder(None, *args, **kwargs)
 
 current_user = None
 
@@ -104,7 +116,7 @@ class TestChangePasswordView(object):
             return {}
 
         class Responder(views.ChangePassword.Responder):
-            def get_next_url(self):
+            def url_for(self, *args, **kwargs):
                 return '/'
 
             def new_password_validators(self):
@@ -152,7 +164,7 @@ class TestForgotPasswordResponder(ResponderTestBase):
             self.resets_requested = []
             views.ForgotPassword.Responder.__init__(self, *args, **kwargs)
 
-        def get_next_url(self):
+        def url_for(self, *args, **kwargs):
             return '/'
 
         def request_password_reset(self, email):
@@ -191,7 +203,7 @@ class TestForgotPasswordView(object):
             return {}
 
         class Responder(views.ForgotPassword.Responder):
-            def get_next_url(self):
+            def url_for(self, *args, **kwargs):
                 return '/'
 
             def request_password_reset(self, email):
@@ -249,7 +261,7 @@ class TestLoginResponder(ResponderTestBase):
         def login_user(self, user, remember, *args, **kwargs):
             self.login_effects.append(user)
 
-        def get_next_url(self):
+        def url_for(self, *args, **kwargs):
             return '/'
 
         def check_user_blocked_from_login_attempt(self, user):
@@ -329,7 +341,7 @@ class TestLoginView(object):
             return {}
 
         class Responder(views.Login.Responder):
-            def get_next_url(self):
+            def url_for(self, *args, **kwargs):
                 return '/'
 
             def get_current_user(self):
@@ -341,6 +353,11 @@ class TestLoginView(object):
 
             def get_user_by_id(self, id):
                 return user_map.get(id)
+
+            def check_user_blocked_from_login(self, user):
+                if not user.is_active:
+                    return [Flash('Inactive User', 'error')]
+                return []
 
     def setup_method(self, _):
         global current_user
@@ -393,6 +410,15 @@ class TestLoginView(object):
         assert response.status_code == 200
         assert current_user is None
 
+    def test_login_view_user_inactive(self):
+        user = User('foo@bar.com', 'passW0rd', is_active=False)
+        user_map['foo@bar.com'] = user
+
+        test_app = app.test_client()
+        response = test_app.post('/login', data={'id': 'foo@bar.com', 'password': 'passW0rd'})
+        assert response.status_code == 200
+        assert current_user is None
+
 
 class TestLogoutResponder(ResponderTestBase):
     """Tests isolating [most] dependencies and effects."""
@@ -405,8 +431,11 @@ class TestLogoutResponder(ResponderTestBase):
         def logout_user(self):
             self.logout_effects += 1
 
-        def get_next_url(self):
+        def url_for(self, *args, **kwargs):
             return '/'
+
+    def make_responder(self, *args, **kwargs):
+        return self.Responder(self.make_user(), *args, **kwargs)
 
     def test_logout(self):
         user = self.make_user()
@@ -435,7 +464,7 @@ class TestLogoutView(object):
             return current_user
 
         class Responder(views.Logout.Responder):
-            def get_next_url(self):
+            def url_for(self, *args, **kwargs):
                 return '/'
 
             def logout_user(self):
@@ -472,7 +501,7 @@ class TestResetPasswordResponder(ResponderTestBase):
         def process_reset_token(self, reset_token):
             return token_map.get(reset_token), reset_token
 
-        def get_next_url(self):
+        def url_for(self, *args, **kwargs):
             return '/'
 
         def new_password_validators(self, user):
@@ -486,6 +515,9 @@ class TestResetPasswordResponder(ResponderTestBase):
         token = token or randchars()
         token_map[token] = user
         return token
+
+    def make_responder(self, *args, **kwargs):
+        return self.Responder(self.make_token(), *args, **kwargs)
 
     def test_invalid_token(self):
         responder = self.Responder(token=b'blah')
@@ -559,7 +591,7 @@ class TestResetPasswordView(object):
             current_user = None
 
         class Responder(views.ResetPassword.Responder):
-            def get_next_url(self):
+            def url_for(self, *args, **kwargs):
                 return '/'
 
             def process_reset_token(self, reset_token):

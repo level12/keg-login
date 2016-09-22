@@ -68,7 +68,7 @@ class Responder(object):
 
     def url_for(self, *args, **kwargs):
         """Allows responder to be isolated from app configuration."""
-        return flask.url_for(*args, **kwargs)
+        return flask.url_for(*args, **kwargs)  # pragma: no cover
 
 
 class LoggedInResponder(Responder):

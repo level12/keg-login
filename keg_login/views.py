@@ -47,19 +47,19 @@ class KegLoginView(keg.web.BaseView):
 class CanLogin(object):
     """Mixin to capture the login effect. Defaults to Flask-Login's behavior."""
     def login_user(self, user, remember, *args, **kwargs):
-        return flask_login.login_user(user, remember, *args, **kwargs)
+        return flask_login.login_user(user, remember, *args, **kwargs)  # pragma: no cover
 
 
 class CanLogout(object):
     """Mixin to capture the logout effect. Defaults to Flask-Login's behavior."""
     def logout_user(self):
-        flask_login.logout_user()
+        flask_login.logout_user()  # pragma: no cover
 
 
 class NeedsCurrentUser(object):
     """Mixin to capture the effect of looking at the current user."""
     def get_current_user(self):
-        return current_user
+        return current_user  # pragma: no cover
 
 
 class ChangePassword(KegLoginView, NeedsCurrentUser):
@@ -213,7 +213,7 @@ class Login(KegLoginView):
             pass  # pragma: no cover
 
         def get_current_user(self):
-            return current_user
+            return current_user  # pragma: no cover
 
         def get(self):
             return self.render_with({'form': self.make_form()})
