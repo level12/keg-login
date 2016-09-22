@@ -2,6 +2,8 @@
 *.pyo
 *.egg-info
 .cache/
+build/
+dist/
 
 .coverage
 coverage.xml
