@@ -15,6 +15,14 @@ from .lib import (
     Responder,
 )
 
+__all__ = [
+    'ChangePassword',
+    'ForgotPassword',
+    'Login',
+    'Logout',
+    'ResetPassword',
+]
+
 
 def requires_login(current_user=current_user):
     @wrapt.decorator
