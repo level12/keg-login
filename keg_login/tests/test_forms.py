@@ -127,7 +127,7 @@ class TestLoginForm(object):
 
             form = self.form_cls(invalid)(MultiDict({'id': 'foo@bar.com', 'password': 'Foo'}))
             assert not form.validate()
-            assert form.password.errors == ['Not Valid']
+            assert form.form_errors == ['Not Valid']
 
     def test_id_field(self):
         with app.test_request_context():
