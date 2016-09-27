@@ -1,6 +1,6 @@
 from keg_login.ext import KegLogin
-from keg_login.forms import *
-from keg_login.views import *
+from keg_login.forms import *  # noqa
+from keg_login.views import *  # noqa
 
 
 __all__ = [
