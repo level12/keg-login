@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from keg_elements.forms import Form, form_validator
 from wtforms.fields import (
     BooleanField,
     HiddenField,
@@ -48,12 +48,14 @@ def make_forgot_password_form(email_validator=lambda *a, **kw: None):
     return ForgotPasswordForm
 
 
-def make_email_login_field(email_validator):
-    return StringField(u'Email', validators=[
+def make_email_login_field(email_validator=None):
+    vl = [
         validators.DataRequired(),
         validators.Email(),
-        email_validator,
-    ])
+    ]
+    if email_validator is not None:
+        vl.append(email_validator)
+    return StringField(u'Email', validators=vl)
 
 
 def make_login_form(password_validator, id_field):
@@ -63,9 +65,12 @@ def make_login_form(password_validator, id_field):
 
         password = PasswordField('Password', validators=[
             validators.DataRequired(),
-            password_validator
         ])
         remember_me = BooleanField('Remember me')
+
+        @form_validator
+        def _password_validator(self):
+            password_validator(self)
 
     return LoginForm
 

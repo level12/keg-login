@@ -9,6 +9,13 @@
             {{ form.hidden_tag() }}
 
             <img class="center-block logo" src="{{ url_for('static', filename='img/FIS-Logo-Green-login.png') }}">
+            {% if form.form_errors %}
+                <div class="has-error">
+                    {% for e in form.form_errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="form-group {% if form.id.errors %}has-error{% endif %}">
                 <div class="input-group">
                     {{ form.id(class_='form-control', placeholder="Email", tabindex=110) }}

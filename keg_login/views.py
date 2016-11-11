@@ -172,7 +172,7 @@ class Login(KegLoginView):
     class Responder(Responder, CanLogin):
         template = 'keg-login/login.html'
 
-        def get_id_form_field(self, user_password_validator):
+        def get_id_form_field(self, user_password_validator=None):
             """Returns a WTForms field object to represent the ID of a user. For example, this might be
             a username, an email, or both. The field should validate its input."""
             return forms.make_email_login_field(user_password_validator)
@@ -186,14 +186,14 @@ class Login(KegLoginView):
             return user.verify_password(password)
 
         def make_form(self):
-            def validate_password(form, field):
+            def validate_password(form):
                 user = self.get_user_by_id(form.id.data)
                 if not user or not self.verify_password(user, form.password.data):
                     raise ValidationError(u'Invalid user or password')
 
             form_cls = forms.make_login_form(
                 validate_password,
-                self.get_id_form_field(validate_password),
+                self.get_id_form_field(),
             )
             return form_cls(next=self.get_next_url(), **(self.form_kwargs or {}))
 
