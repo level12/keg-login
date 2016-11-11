@@ -1,0 +1,16 @@
+Changelog
+=========
+
+ - 2016-11-11
+------------------
+
+* Merge pull request #8 from level12/keg-elements-form-level-validation (7ae0c95_)
+* Merge pull request #5 from level12/gh-2-multiple-template-bases (b24de25_)
+* Merge pull request #6 from level12/gh-3-package-level-imports (d3eb6b8_)
+* Merge pull request #7 from level12/gh-4-flask.ext-deprecation (ca005a5_)
+
+.. _7ae0c95: https://github.com/level12/keg-login/commit/7ae0c95
+.. _b24de25: https://github.com/level12/keg-login/commit/b24de25
+.. _d3eb6b8: https://github.com/level12/keg-login/commit/d3eb6b8
+.. _ca005a5: https://github.com/level12/keg-login/commit/ca005a5
+
