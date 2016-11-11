@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 import flask
-from flask.ext.login import current_user
 import flask_login
 import keg.web
 import wrapt
@@ -16,7 +15,7 @@ from .lib import (
 )
 
 
-def requires_login(current_user=current_user):
+def requires_login(current_user=flask_login.current_user):
     @wrapt.decorator
     def decorator(fn, instance, args, kwargs):
         return (fn(*args, **kwargs) if current_user and current_user.is_authenticated
@@ -59,7 +58,7 @@ class CanLogout(object):
 class NeedsCurrentUser(object):
     """Mixin to capture the effect of looking at the current user."""
     def get_current_user(self):
-        return current_user  # pragma: no cover
+        return flask_login.current_user  # pragma: no cover
 
 
 class ChangePassword(KegLoginView, NeedsCurrentUser):
@@ -213,7 +212,7 @@ class Login(KegLoginView):
             pass  # pragma: no cover
 
         def get_current_user(self):
-            return current_user  # pragma: no cover
+            return flask_login.current_user  # pragma: no cover
 
         def get(self):
             return self.render_with({'form': self.make_form()})
