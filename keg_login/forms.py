@@ -8,6 +8,15 @@ from wtforms.fields import (
 from wtforms import validators
 
 
+__all__ = [
+    'make_change_password_form',
+    'make_forgot_password_form',
+    'make_email_login_field',
+    'make_login_form',
+    'make_reset_password_form',
+]
+
+
 def make_change_password_form(old_password_validators, new_password_validators):
     class ChangePasswordForm(Form):
         next = HiddenField()
