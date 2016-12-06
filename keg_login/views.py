@@ -171,6 +171,7 @@ class Login(KegLoginView):
 
     class Responder(Responder, CanLogin):
         template = 'keg-login/login.html'
+        enable_remember_me = True
 
         def get_id_form_field(self, user_password_validator=None):
             """Returns a WTForms field object to represent the ID of a user. For example, this might be
@@ -194,6 +195,7 @@ class Login(KegLoginView):
             form_cls = forms.make_login_form(
                 validate_password,
                 self.get_id_form_field(),
+                enable_remember_me=self.enable_remember_me
             )
             return form_cls(next=self.get_next_url(), **(self.form_kwargs or {}))
 
@@ -240,7 +242,7 @@ class Login(KegLoginView):
                     return self.render_with({'form': form}, login_blocked_flashes)
 
                 flashes = self.handle_login_success(user)
-                self.login_user(user, remember=form.remember_me.data)
+                self.login_user(user, remember=self.enable_remember_me and form.remember_me.data)
                 return RedirectResponse(form.next.data, flashes)
 
             if user:

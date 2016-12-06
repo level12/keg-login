@@ -51,7 +51,9 @@
             <hr>
             <div class="row">
                 <div class="col-lg-6">
-                    {{ render_checkbox_field(form.remember_me, tabindex=130) }}
+                    {% if form.remember_me %}
+                        {{ render_checkbox_field(form.remember_me, tabindex=130) }}
+                    {% endif %}
                 </div>
 
                 {# Submit button #}

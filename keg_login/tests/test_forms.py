@@ -139,6 +139,36 @@ class TestLoginForm(object):
             form = self.form_cls(id_field=id)(MultiDict({'id': '15', 'password': 'Foo'}))
             assert form.validate()
 
+    def test_remember_me_enabled(self):
+        with app.test_request_context():
+            data = {
+                'id': 'foo@example.com',
+                'password': '12345',
+            }
+            form = self.form_cls()(MultiDict(data))
+            assert form.remember_me.data is False
+
+            data['remember_me'] = True
+            form = self.form_cls()(MultiDict(data))
+            assert form.remember_me.data is True
+
+    def test_remember_me_disabled(self):
+        form_cls = make_login_form(
+            lambda *args, **kwargs: None,
+            make_email_login_field(lambda *args, **kwargs: None),
+            enable_remember_me=False
+        )
+        with app.test_request_context():
+            data = {
+                'id': 'foo@example.com',
+                'password': '12345',
+                'remember_me': True
+            }
+            form = form_cls(MultiDict(data))
+            assert not hasattr(form, 'remember_me')
+            assert form.validate()
+            assert 'remember_me' not in form.data
+
 
 class TestResetPasswordForm(object):
     def form_cls(self, pw_validators=None):
