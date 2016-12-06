@@ -365,7 +365,6 @@ class TestLoginResponder(ResponderTestBase):
             assert responder.login_effects == [(user, False)]
 
 
-
 class TestLoginView(object):
     class Login(views.Login):
         blueprint = bp
