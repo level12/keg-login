@@ -58,7 +58,7 @@ def make_email_login_field(email_validator=None):
     return StringField(u'Email', validators=vl)
 
 
-def make_login_form(password_validator, id_field):
+def make_login_form(password_validator, id_field, enable_remember_me=True):
     class LoginForm(Form):
         next = HiddenField()
         id = id_field
@@ -66,7 +66,9 @@ def make_login_form(password_validator, id_field):
         password = PasswordField('Password', validators=[
             validators.DataRequired(),
         ])
-        remember_me = BooleanField('Remember me')
+
+        if enable_remember_me:
+            remember_me = BooleanField('Remember me')
 
         @form_validator
         def _password_validator(self):

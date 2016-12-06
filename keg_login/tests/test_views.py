@@ -2,6 +2,7 @@ from pathlib import Path
 
 from blazeutils import randchars
 import flask
+from pyquery import PyQuery
 from wtforms import validators
 
 from keg_login import views
@@ -259,7 +260,7 @@ class TestLoginResponder(ResponderTestBase):
             return user_map.get(id)
 
         def login_user(self, user, remember, *args, **kwargs):
-            self.login_effects.append(user)
+            self.login_effects.append((user, remember))
 
         def url_for(self, *args, **kwargs):
             return '/'
@@ -330,7 +331,39 @@ class TestLoginResponder(ResponderTestBase):
         assert type(response) == RedirectResponse
         assert response.url == '/'
         assert response.flash_messages == [Flash('Welcome!', 'success')]
-        assert responder.login_effects == [user]
+        assert responder.login_effects == [(user, False)]
+
+    def test_remember_me_enabled(self):
+        with app.test_request_context():
+            user = self.make_user()
+            responder = self.Responder(form_kwargs={
+                'id': user.email,
+                'password': user.password,
+                'remember_me': True
+            })
+            response = responder.get()
+            assert len(PyQuery(response.as_flask_response())('[name="remember_me"]')) == 1
+
+            response = responder.post()
+            assert type(response) == RedirectResponse
+            assert responder.login_effects == [(user, True)]
+
+    def test_remember_me_disabled(self):
+        with app.test_request_context():
+            user = self.make_user()
+            responder = self.Responder(form_kwargs={
+                'id': user.email,
+                'password': user.password,
+                'remember_me': True
+            })
+            responder.enable_remember_me = False
+            response = responder.get()
+            assert len(PyQuery(response.as_flask_response())('[name="remember_me"]')) == 0
+
+            response = responder.post()
+            assert type(response) == RedirectResponse
+            assert responder.login_effects == [(user, False)]
+
 
 
 class TestLoginView(object):
