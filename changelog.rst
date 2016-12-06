@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.5.2 - 2016-12-06
+------------------
+
+* Allow configuration of remember button (0d263a4_)
+
+.. _0d263a4: https://github.com/level12/keg-login/commit/0d263a4
+
+
  - 2016-11-11
 ------------------
 
