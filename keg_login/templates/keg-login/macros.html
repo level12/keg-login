@@ -6,7 +6,7 @@ This might seem odd to have a `macros.html` and a `_macros.html` where the
 public one (this file) just extends the other one.
 
 The purpose is for grunal extensibility. In an application, you can overwrite
-the macros which rendeear the forms / pages and change just one of them without
+the macros which render the forms / pages and change just one of them without
 having to change all of them.
 
 Consider if we only had one file call macros.html like this...
@@ -18,6 +18,6 @@ Consider if we only had one file call macros.html like this...
 
 By creating your app version of the file you lose all of the default macros.
 Instead Keg-Login allows you to redefine macro's in the application by having a
-set of macros in `_macros.html` which shouldn't be overriden and a public file
+set of macros in `_macros.html` which shouldn't be overridden and a public file
 which you can use to override the defaults.
 #}
