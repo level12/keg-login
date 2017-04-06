@@ -342,7 +342,7 @@ class TestLoginResponder(ResponderTestBase):
                 'remember_me': True
             })
             response = responder.get()
-            assert len(PyQuery(response.as_flask_response())('[name="remember_me"]')) == 1
+            assert len(PyQuery(response.as_flask_response())('#remember_me')) == 1
 
             response = responder.post()
             assert type(response) == RedirectResponse
