@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.5.3 - 2017-04-08
+------------------
+
+* Implement Secure Password Reset (dcb1487_)
+
+.. _dcb1487: https://github.com/level12/keg-login/commit/dcb1487
+
+
 0.5.2 - 2016-12-06
 ------------------
 
