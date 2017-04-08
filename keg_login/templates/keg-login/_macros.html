@@ -1,43 +1,135 @@
-{% macro render_field(field, label=None, label_visible=true, right_url=None, right_label=None) -%}
-    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
-        {% if field.type != 'HiddenField' and label_visible %}
-            {% if not label %}{% set label=field.label.text %}{% endif %}
-            <label for="{{ field.id }}" class="control-label">{{ label|safe }}</label>
-        {% endif %}
-        {{ field(class_='form-control', **kwargs) }}
-        {% if field.errors %}
-            {% for e in field.errors %}
-                <p class="help-block">{{ e }}</p>
-            {% endfor %}
-        {% endif %}
+{# A note on the if statements...
+
+Jinja2 will execute the child template first and then the parent template. We
+want to allow the child template to overwrite these macros. To accomplish that,
+if the macro is already defined, we don't redefine it here.
+
+A little bit of a hack, yes, but that is the execute of Jinja2 and there isn't
+going to be much you can do about it. File an issue if you find a bug.
+#}
+
+{% if not render_wrapper %}
+{% macro render_wrapper() %}
+  {{ caller() }}
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_field %}
+{% macro render_field(field) -%}
+  <div class="form-group {{ 'has-error' if field.errors else '' }} {{ kwargs.pop('class_', '') }}">
+    {{ field.label }}
+    {{ field(class_='form-control') }}
+    {% if field.errors %}
+      {% for e in field.errors %}
+        <p class="help-block">{{ e }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+{%- endmacro %}
+{% endif %}
+
+
+{% if not render_username %}
+{% macro render_username(field) %}
+  {{ render_field(field) }}
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_password %}
+{% macro render_password(field) %}
+  {{ render_field(field) }}
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_submit_field -%}
+{% macro render_submit_field(value) -%}
+  <input type="submit" class="btn btn-fill btn-wd" value="{{ value }}">
+{%- endmacro %}
+{% endif %}
+
+
+{% if not render_forgot_password_link %}
+{% macro render_forgot_password_link() %}
+  <a href="{{ url_for('keg_login.forgot-password') }}">Forgot Password</a>
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_remember_me %}
+{% macro render_remember_me(field) %}
+  <div class="checkbox">
+      <label>
+          {{ field(type='checkbox', **kwargs) }} {{ field.label }}
+      </label>
+  </div>
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_login_form %}
+{% macro render_login_form(form) %}
+  <form method="POST" action="">
+    {% call render_wrapper() %}
+      <div class="content">
+        {{ form.hidden_tag() }}
+        {{ render_username(form.id) }}
+        {{ render_password(form.password) }}
+        {{ render_submit_field("Login") }}
+        {% if form.remember_me %}{{ render_remember_me(form.remember_me) }}{% endif %}
+        {{ render_forgot_password_link() }}
+      </div>
+    {% endcall %}
+  </form>
+{% endmacro %}
+{% endif %}
+
+
+{% if not render_forgot_password_form %}
+{% macro render_forgot_password_form(form) %}
+<form action="" method="POST" class="form" role="form">
+  {% call render_wrapper() %}
+    <div class="content">
+      {{ form.hidden_tag() }}
+      {{ render_username(form.email) }}
+      {{ render_submit_field("Request Reset") }}
     </div>
-{%- endmacro %}
+  {% endcall %}
+</form>
+{% endmacro %}
+{% endif %}
 
-{% macro render_checkbox_field(field, label=None) -%}
-    {% if not label %}{% set label=field.label.text %}{% endif %}
-    <div class="checkbox">
-        <label>
-            {{ field(type='checkbox', **kwargs) }} {{ label }}
-        </label>
+
+{% if not render_reset_password_form %}
+{% macro render_reset_password_form(form) %}
+<form action="" method="POST" class="form" role="form">
+  {% call render_wrapper() %}
+    <div class="content">
+      {{ form.hidden_tag() }}
+      {{ render_password(form.new_password) }}
+      {{ render_password(form.retype_password) }}
+      {{ render_submit_field("Reset Password") }}
     </div>
-{%- endmacro %}
+  {% endcall %}
+</form>
+{% endmacro %}
+{% endif %}
 
-{% macro render_radio_field(field) -%}
-    {% for value, label, checked in field.iter_choices() %}
-        <div class="radio">
-            <label>
-                <input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"{% if checked %} checked{% endif %}>
-                {{ label }}
-            </label>
-        </div>
-    {% endfor %}
-{%- endmacro %}
 
-{% macro render_submit_field(field, label=None, tabindex=None) -%}
-    {% if not label %}{% set label=field.label.text %}{% endif %}
-    {#<button type="submit" class="form-control btn btn-default btn-primary">{{label}}</button>#}
-    <input type="submit" class="btn btn-default btn-primary" value="{{label}}"
-           {% if tabindex %}tabindex="{{ tabindex }}"{% endif %}
-           >
-{%- endmacro %}
-
+{% if not render_change_password_form %}
+{% macro render_change_password_form(form) %}
+<form action="" method="POST" class="form" role="form">
+  {% call render_wrapper() %}
+    <div class="content">
+      {{ form.hidden_tag() }}
+      {{ render_password(form.old_password) }}
+      {{ render_password(form.new_password) }}
+      {{ render_password(form.retype_password) }}
+      {{ render_submit_field("Change Password") }}
+    </div>
+  {% endcall %}
+</form>
+{% endmacro %}
+{% endif %}
