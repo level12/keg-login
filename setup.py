@@ -3,16 +3,14 @@ import os.path as osp
 from setuptools import setup, find_packages
 
 cdir = osp.abspath(osp.dirname(__file__))
-version_fpath = osp.join(cdir, 'keg_login', 'version.py')
-version_globals = {}
-with open(version_fpath) as fo:
-    exec(fo.read(), version_globals)
-
 README = open(osp.join(cdir, 'readme.rst')).read()
 
 setup(
     name='KegLogin',
-    version=version_globals['VERSION'],
+    setup_requires=[
+        'setuptools_scm',
+    ],
+    use_scm_version=True,
     description='Authentication views for Keg',
     author='Level 12',
     author_email='devteam@level12.io',
@@ -34,5 +32,5 @@ setup(
         'Keg',
         'KegElements'
     ],
-    long_descripton=README,
+    long_description=README,
 )
