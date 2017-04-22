@@ -92,9 +92,15 @@ class PasswordResetTokenGenerator:
 
         return "%s-%s" % (ts_b36, prepared_hash)
 
+    def _last_login(self, user):
+        """Return a timestamp of the last time a user logged in"""
+        return user.last_login
+
     def _make_hash_value(self, user, timestamp):
-        login_timestamp = ('' if user.last_login is None
-                           else user.last_login.replace(microsecond=0, tzinfo=None))
+        last_login = self._last_login(user)
+
+        login_timestamp = ('' if last_login is None
+                           else last_login.replace(microsecond=0, tzinfo=None))
 
         return str(user.id) + str(user.password) + str(login_timestamp) + str(timestamp)
 
