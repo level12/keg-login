@@ -1,4 +1,4 @@
-from datetime import datetime as dt, date as d
+from datetime import datetime as dt, date as d, timedelta as td
 
 import pytest
 
@@ -96,7 +96,8 @@ class TestPasswordResetTokenGenerator(object):
         prtg.setup(secret='other')
         assert default != prtg._make_token_with_timestamp(user, 1)
 
-    def test_check_token(self, prtg, user):
+    def test_check_token(self, user):
+        prtg = MockPRTG()
         default = prtg._make_token_with_timestamp(user, 1)
 
         assert prtg.check_token(user, default)
@@ -111,5 +112,11 @@ class TestPasswordResetTokenGenerator(object):
         assert not prtg.check_token(user, 'zzzzzzzzzzzzzz-as')
 
         # Test token expiration
-        prtg.setup(today=d(2017, 1, 3))
+        prtg.setup(today=d(2001, 1, 2))  # Same day use case
+        assert prtg.check_token(user, default)
+
+        prtg.setup(today=d(2001, 1, 2) + td(hours=23, minutes=59, seconds=59))  # next day use case
+        assert prtg.check_token(user, default)
+
+        prtg.setup(today=d(2001, 1, 3))  # 24hrs +1sec
         assert not prtg.check_token(user, default)
