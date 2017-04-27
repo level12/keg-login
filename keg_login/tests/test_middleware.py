@@ -11,7 +11,7 @@ class TestLockedOutMiddleware(object):
         assert not cls().should_lock_out('static', {'keg-login.lockout': True})
 
         # In extra routes
-        assert not cls(exclude=['thingy']).should_lock_out('thingy', {'keg-login.lockout': True})
+        assert not cls(exclude={'thingy'}).should_lock_out('thingy', {'keg-login.lockout': True})
 
         # Sad path
         assert cls().should_lock_out('thingy', {'keg-login.lockout': True})
