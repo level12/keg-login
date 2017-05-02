@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.5.4 - 2017-05-02
+------------------
+
+* Setup Lock Screen (cf8d904_)
+* Implement Secure Password Reset (dcb1487_)
+
+.. _cf8d904: https://github.com/level12/keg-login/commit/cf8d904
+.. _dcb1487: https://github.com/level12/keg-login/commit/dcb1487
+
+
 0.5.3 - 2017-04-08
 ------------------
 
