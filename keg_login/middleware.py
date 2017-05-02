@@ -22,6 +22,5 @@ class LockedOutMiddleware(object):
         return False if endpoint in self.exclude_routes else True
 
     def __call__(self):
-        return (flask.redirect(flask.url_for(self.lock_endpoint))
-                if self.should_lock_out(flask.request.endpoint, flask.session)
-                else None)
+        if self.should_lock_out(flask.request.endpoint, flask.session):
+            return flask.redirect(flask.url_for(self.lock_endpoint))
