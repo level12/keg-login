@@ -69,6 +69,21 @@ going to be much you can do about it. File an issue if you find a bug.
 {% endif %}
 
 
+{% if not render_lock_form %}
+{% macro render_lock_form(form, user) %}
+  <form method="POST" action="#">
+    {% call render_wrapper() %}
+      <div class="content">
+        {{ form.hidden_tag() }}
+        {{ render_password(form.password) }}
+        {{ render_submit_field('Unlock') }}
+      </div>
+    {% endcall %}
+  </form>
+{% endmacro %}
+{% endif %}
+
+
 {% if not render_login_form %}
 {% macro render_login_form(form) %}
   <form method="POST" action="">

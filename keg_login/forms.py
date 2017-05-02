@@ -90,6 +90,15 @@ def make_reset_password_form(password_validators=None):
     return ResetPasswordForm
 
 
+def make_lock_form():
+    class LockForm(Form):
+        next = HiddenField()
+        password = PasswordField(
+            u'Passsword', validators=[validators.DataRequired()])
+
+    return LockForm
+
+
 def bool_validator(pred, error_message):
     """Returns a simple WTForms validator that raises the given error message as a validation error
     IFF the given predicate function returns False on the field's value.

@@ -51,6 +51,16 @@ class KegLoginView(keg.web.BaseView):
         )
 
 
+class CanSetLock(object):
+    def set_lockout(self):
+        flask.session['keg-login.lockout'] = True
+
+
+class CanRemoveLock(object):
+    def remove_lockout(self):
+        flask.session.pop('keg-login.lockout', None)
+
+
 class CanLogin(object):
     """Mixin to capture the login effect. Defaults to Flask-Login's behavior."""
     def login_user(self, user, remember, *args, **kwargs):
@@ -158,6 +168,51 @@ class ForgotPassword(KegLoginView):
                 return RedirectResponse(form.next.data, flashes)
 
             return self.render_with({'form': form})
+
+    def get(self):
+        return self.get_responder().get().as_flask_response()
+
+    def post(self):
+        return self.get_responder().post().as_flask_response()
+
+
+class Lock(KegLoginView, NeedsCurrentUser):
+    url = '/lock'
+
+    class Responder(LoggedInResponder, CanSetLock, CanRemoveLock):
+        template = 'keg-login/lock.html'
+
+        def make_form(self):
+            formcls = forms.make_lock_form()
+            return formcls(next=self.get_next_url(), **(self.form_kwargs or {}))
+
+        def get(self):
+            self.set_lockout()
+            return self.render_with({
+                'form': self.make_form(),
+                'user': self.user,
+            })
+
+        def post(self):
+            form = self.make_form()
+
+            if not form.validate():
+                return self.render_with(
+                    {'form': form},
+                    [Flash(u'The submission was invalid', 'error')]
+                )
+
+            if not self.user.verify_password(form.password.data):
+                return self.render_with(
+                    {'form': form},
+                    [Flash(u'That is not the correct password.', 'error')]
+                )
+
+            self.remove_lockout()
+            return RedirectResponse(form.data['next'], [])
+
+    def get_responder(self):
+        return self.Responder(user=self.get_current_user(), query_args=flask.request.args)
 
     def get(self):
         return self.get_responder().get().as_flask_response()

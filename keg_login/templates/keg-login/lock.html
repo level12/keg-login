@@ -1,0 +1,6 @@
+{% extends 'keg-login/base.html' %}
+{% from "keg-login/macros.html" import render_lock_form with context %}
+
+{% block main %}
+    {{ render_lock_form(form) }}
+{% endblock %}

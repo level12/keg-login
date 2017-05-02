@@ -244,6 +244,57 @@ class TestForgotPasswordView(object):
 user_map = {}
 
 
+class TestLockResponder(ResponderTestBase):
+
+    class Responder(views.Lock.Responder):
+        def url_for(self, endpoint):
+            return '/'
+
+    def make_responder(self, *args, **kwargs):
+        return self.Responder(None, *args, **kwargs)
+
+    def test_get_sets_lockout(self):
+        with app.test_request_context():
+            view = self.Responder(self.make_user())
+            view.get()
+            assert 'keg-login.lockout' in flask.session
+
+    def test_valid_post_clears_lockout(self):
+        with app.test_request_context():
+            view = self.Responder(
+                self.make_user(password='pw'),
+                form_kwargs={'password': 'pw'},
+            )
+            view.get()
+            assert 'keg-login.lockout' in flask.session
+
+            view.post()
+            assert 'keg-login.lockout' not in flask.session
+
+    def test_invalid_post_wont_clear_lockout(self):
+        with app.test_request_context():
+            view = self.Responder(
+                self.make_user(password='pw'),
+            )
+            view.get()
+            assert 'keg-login.lockout' in flask.session
+
+            view.post()
+            assert 'keg-login.lockout' in flask.session
+
+    def test_wrong_password_wont_clear_lockout(self):
+        with app.test_request_context():
+            view = self.Responder(
+                self.make_user(password='pw'),
+                form_kwargs={'password': 'otherpw'},
+            )
+            view.get()
+            assert 'keg-login.lockout' in flask.session
+
+            view.post()
+            assert 'keg-login.lockout' in flask.session
+
+
 class TestLoginResponder(ResponderTestBase):
     def make_user(self, email=None, password=None, is_active=True):
         email = email or '{}@{}.com'.format(randchars(), randchars())
